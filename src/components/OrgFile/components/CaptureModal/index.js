@@ -118,35 +118,29 @@ export default ({ template, onCapture, headers }) => {
           .join(' > ')}
       </div>
 
-      {targetHeader ? (
-        <Fragment>
-          <textarea
-            className="textarea capture-modal-textarea"
-            rows="4"
-            value={textareaValue}
-            onChange={handleTextareaChange}
-            autoFocus
-            ref={textarea}
-          />
-          <div className="capture-modal-button-container">
-            <div className="capture-modal-prepend-container">
-              <span className="capture-modal-prepend-label">Prepend:</span>
-              <Switch isEnabled={shouldPrepend} onToggle={handlePrependSwitchToggle} />
-            </div>
-
-            <button className="btn capture-modal-button" onClick={handleCaptureClick}>
-              Capture
-            </button>
+      <Fragment>
+        <textarea
+          className="textarea capture-modal-textarea"
+          rows="4"
+          value={textareaValue}
+          onChange={handleTextareaChange}
+          autoFocus
+          ref={textarea}
+        />
+        <div className="capture-modal-button-container">
+          <div className="capture-modal-prepend-container">
+            <span className="capture-modal-prepend-label">Prepend:</span>
+            <Switch isEnabled={shouldPrepend} onToggle={handlePrependSwitchToggle} />
           </div>
-          {/* Add padding to move the above textarea above the fold.
-          More documentation, see getMinHeight(). */}
-          {isMobileSafari13 && <div style={{ minHeight: getMinHeight() }} />}
-        </Fragment>
-      ) : (
-        <div className="capture-modal-error-message">
-          The specified header path doesn't exist in this org file!
+
+          <button className="btn capture-modal-button" onClick={handleCaptureClick}>
+            Capture
+          </button>
         </div>
-      )}
+        {/* Add padding to move the above textarea above the fold.
+        More documentation, see getMinHeight(). */}
+        {isMobileSafari13 && <div style={{ minHeight: getMinHeight() }} />}
+      </Fragment>
 
       <br />
     </>

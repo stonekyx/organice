@@ -60,6 +60,7 @@ import {
 } from '../lib/org_utils';
 import { timestampForDate, getTimestampAsText, applyRepeater } from '../lib/timestamps';
 import generateId from '../lib/id_generator';
+import substituteTemplateVariables from '../lib/capture_template_substitution';
 import { formatTextWrap } from '../util/misc';
 import { applyFileSettingsFromConfig } from '../util/settings_persister';
 
@@ -845,6 +846,33 @@ const updateTableCellValue = (state, action) => {
 };
 
 const insertCapture = (state, action) => {
+  const headers = state.get('headers');
+  const { template, content, shouldPrepend } = action;
+
+  const headerPaths = template.get('headerPaths');
+  let existingPrefix = headerPaths.size;
+  while (existingPrefix > 0 && headerWithPath(headers, headerPaths.slice(0, existingPrefix)) == null) {
+    existingPrefix--;
+  }
+
+  while (existingPrefix <= headerPaths.size) {
+    state = insertCaptureSingle(
+      state,
+      {
+        ...action,
+        template: template.set('headerPaths', headerPaths.slice(0, existingPrefix)),
+        content: existingPrefix === headerPaths.size
+          ? content
+          : substituteTemplateVariables(headerPaths.get(existingPrefix))[0].trim(),
+      }
+    );
+    existingPrefix++;
+  }
+
+  return state;
+};
+
+const insertCaptureSingle = (state, action) => {
   const headers = state.get('headers');
   const { template, content, shouldPrepend } = action;
 
