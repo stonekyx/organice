@@ -515,7 +515,7 @@ export const parseRawText = (rawText, { excludeContentElements = false } = {}) =
 
 export const _parsePlanningItems = (rawText) => {
   const optionalSinglePlanningItemRegex = RegExp(
-    `((DEADLINE|SCHEDULED|CLOSED):\\s*${asStrNoSlashs(timestampRegex)})?`
+    `((DEADLINE|SCHEDULED|CLOSED):\\s*${asStrNoSlashs(timestampRegex)}(?:--${asStrNoSlashs(timestampRegex)})?)?`
   );
 
   // If there are any planning items, consume not more
@@ -529,7 +529,7 @@ export const _parsePlanningItems = (rawText) => {
     optionalSinglePlanningItemRegex,
     /[ \t]*\n?/
   );
-  const planningRegexCaptureGroupsOfType = [2, 21, 40]; // depends on timestampRegex
+  const planningRegexCaptureGroupsOfType = [2, 38, 74]; // depends on timestampRegex
   const planningMatch = rawText.match(planningRegex);
 
   const planningItems = fromJS(
@@ -544,8 +544,12 @@ export const _parsePlanningItems = (rawText) => {
           planningMatch,
           _.range(planningTypeIndex + 1, planningTypeIndex + 1 + 17)
         );
+        const timestampEnd = planningMatch[planningTypeIndex + 1 + 17] != null ? timestampFromRegexMatch(
+          planningMatch,
+          _.range(planningTypeIndex + 1 + 17, planningTypeIndex + 1 + 34)
+        ) : null;
 
-        return createOrUpdateTimestamp({ type, timestamp });
+        return createOrUpdateTimestamp({ type, timestamp, timestampEnd });
       })
       .filter((item) => !!item)
   );
@@ -559,8 +563,8 @@ export const _parsePlanningItems = (rawText) => {
   }
 };
 
-const createOrUpdateTimestamp = ({ type, timestamp, id }) =>
-  fromJS({ type, timestamp, id: id || generateId() });
+const createOrUpdateTimestamp = ({ type, timestamp, timestampEnd, id }) =>
+  fromJS({ type, timestamp, timestampEnd, id: id || generateId() });
 
 const parsePropertyList = (rawText) => {
   const lines = rawText.split('\n');

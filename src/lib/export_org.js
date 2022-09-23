@@ -328,7 +328,8 @@ export const createRawDescriptionText = (header, includeTitle, dontIndent) => {
     const planningItemsContent = planningItemsToRender
       .map((planningItem) => {
         const timestampString = renderAsText(fromJS(planningItem.timestamp));
-        return `${planningItem.type}: ${timestampString}`;
+        const timestampEndString = planningItem.timestampEnd ? '--' + renderAsText(fromJS(planningItem.timestampEnd)) : '';
+        return `${planningItem.type}: ${timestampString}${timestampEndString}`;
       })
       .join(' ')
       .trimRight();
