@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { createClient } from 'webdav';
+import { createClient, AuthType } from 'webdav/dist/web';
 import { isEmpty } from 'lodash';
 
 /**
@@ -28,7 +28,7 @@ export const filterAndSortDirectoryListing = (listing) => {
 };
 
 export default (url, login, password) => {
-  const webdavClient = createClient(url, { username: login, password: password });
+  const webdavClient = createClient(url, { username: login, password: password, authType: AuthType.Basic });
   const isSignedIn = () =>
     new Promise((resolve, reject) => {
       // There's no direct API to know if the login worked. So, let's
