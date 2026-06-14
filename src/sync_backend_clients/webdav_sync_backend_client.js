@@ -30,7 +30,7 @@ export const filterAndSortDirectoryListing = (listing) => {
 export default (url, login, password) => {
   const webdavClient = createClient(url, { username: login, password: password });
   const isSignedIn = () =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       // There's no direct API to know if the login worked. So, let's
       // check if the root folder contents can be accessed.
       getDirectoryListing('/')
@@ -39,7 +39,7 @@ export default (url, login, password) => {
         })
         .catch((error) => {
           console.error("Login didn't work, error: ", JSON.stringify(error));
-          resolve(false);
+          reject(error);
         });
     });
 
